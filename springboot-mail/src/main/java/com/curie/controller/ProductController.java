@@ -7,6 +7,7 @@ import com.curie.dto.ProductRequest;
 import com.curie.model.Product;
 import com.curie.service.ProductService;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -68,6 +69,17 @@ public class ProductController {
 
         // 回傳給前端 201CREATE 然後把查到的數據回傳給前端
         return ResponseEntity.status(HttpStatus.OK).body(updateProduct);
+    }
+
+    // 刪除商品
+    // 為什麼是<?>? // 因為這個方法不需要返回任何內容，所以可以使用通配符<?>來表示返回類型不確定。
+    @DeleteMapping("/deleteProduct/{productId}")
+    public ResponseEntity<?> deleteProduct(@PathVariable Integer productId) {
+        // 不做判定商品是否存在再刪除 因為怎麼樣都是要將商品刪除，故不用特別做資料判定
+         productService.deleteProduct(productId);
+
+        // 刪除要是  HttpStatus.NO_CONTENT
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }
