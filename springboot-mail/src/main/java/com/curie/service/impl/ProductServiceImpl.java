@@ -1,5 +1,6 @@
 package com.curie.service.impl;
 import com.curie.dao.ProductDao;
+import com.curie.dto.ProductRequest;
 import com.curie.model.Product;
 import com.curie.service.ProductService;
 
@@ -16,5 +17,14 @@ public class ProductServiceImpl implements ProductService {
         return productDao.getProductById(productId);
     }
 
+    // createProdct方法實作
+    @Override
+    public Integer createProduct(ProductRequest productRequest) {
+        // service 層去call Dao 的 createProduct 並且將前端參數傳入 -> 執行資料庫
+        return productDao.createProduct(productRequest);
+    }
+
+    
+    
 
 }
