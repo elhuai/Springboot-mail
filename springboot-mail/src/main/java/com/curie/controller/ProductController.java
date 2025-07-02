@@ -49,6 +49,25 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
 
+    // 更新商品
+    @PutMapping("/updateProduct/{productId}") //  只有這個變數 ProductRequest 允許前端去修改的，並且可以限定前端不會改到其他資料
+    public ResponseEntity<Product> updateProduct(@PathVariable Integer productId,@RequestBody @Valid ProductRequest productRequest) {
+        
+        // 先檢查有沒有這商品
+        Product product = productService.getProductById(productId);
+        if (product == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        
+        // 商品若存在就去更新商品
+        // 無返回值 所以不用特別存變數
+        productService.updateProduct(productId,productRequest);
 
+        // 格式是Product 利用id
+        Product updateProduct = productService.getProductById(productId);
+
+        // 回傳給前端 201CREATE 然後把查到的數據回傳給前端
+        return ResponseEntity.status(HttpStatus.OK).body(updateProduct);
+    }
 
 }
