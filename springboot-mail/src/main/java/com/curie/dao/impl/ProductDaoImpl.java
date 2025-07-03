@@ -1,5 +1,6 @@
 package com.curie.dao.impl;
 
+import com.curie.constant.ProductCategory;
 import com.curie.dao.ProductDao;
 import com.curie.dto.ProductRequest;
 import com.curie.model.Product;
@@ -24,6 +25,30 @@ public class ProductDaoImpl implements ProductDao  {
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
+    
+
+    @Override
+    public List<Product> getProducts(ProductCategory category, String search) {
+        String sql ="SELECT product_id,product_name, category, image_url, price, stock, description, create_date, last_modified_date FROM product "+
+        "WHERE 1=1"; //利用WHERE 1=1 讓整個sql判斷可以讓後面任意加上多組篩選
+        
+        // 就算沒有傳入值也要加這行 去將資料轉為想要的型態
+        Map<String,Object> map = new HashMap<>();
+        if (category != null){
+            sql = sql + " AND category=:category"; // 記得要預留一個空白鍵 這樣接上sql語句才不會報錯
+            map.put("category", category.name());  //category是Enum方法，所以要用name()把它轉為字串
+        }
+        if (search != null){
+            sql = sql + " AND (product_name LIKE :search OR description LIKE :search)"; // 記得不可以寫成%:search% 只能寫在map.put()裡面
+            map.put("search", "%" + search + "%");  //因為只是需要模糊符合所以加上％：%XX%只要裡面有XX即可；XX% XX開頭；%XX XX結尾的資料
+        }
+
+        // 利用ProductRowMapper整理每個查好的資料，然後存入
+        List<Product> productList =namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
+        
+        return productList;
+    }
+
     @Override
     public Product getProductById(Integer productId) {
         String sql = "SELECT product_id,product_name, category, image_url, price, stock, description, create_date,"
@@ -33,7 +58,7 @@ public class ProductDaoImpl implements ProductDao  {
         map.put("productId", productId);
 
 
-        List<Product> productList =namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper() );
+        List<Product> productList =namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
         if (productList.size()>0) {
             return productList.get(0);
         }else{

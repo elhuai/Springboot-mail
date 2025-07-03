@@ -1,8 +1,11 @@
 package com.curie.service.impl;
+import com.curie.constant.ProductCategory;
 import com.curie.dao.ProductDao;
 import com.curie.dto.ProductRequest;
 import com.curie.model.Product;
 import com.curie.service.ProductService;
+
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,6 +14,13 @@ import org.springframework.stereotype.Component;
 public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductDao productDao;
+
+    
+
+    @Override
+    public List<Product> getProducts(ProductCategory category, String search) {
+        return productDao.getProducts(category,search);
+    }
 
     @Override
     public Product getProductById(Integer productId) {

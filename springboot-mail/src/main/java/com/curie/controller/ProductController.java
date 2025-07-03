@@ -3,6 +3,7 @@ package com.curie.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.curie.constant.ProductCategory;
 import com.curie.dto.ProductRequest;
 import com.curie.model.Product;
 import com.curie.service.ProductService;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 
@@ -27,6 +31,19 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
+
+    // 查詢非限定商品->不管有沒有查到都200 OK
+    @GetMapping("/products")
+    public ResponseEntity<List<Product>> getProducts(
+        @RequestParam(required = false) ProductCategory category,
+        @RequestParam(required = false) String search ){
+        // 查到的資料以串列形式返回
+       List<Product> productList =  productService.getProducts(category,search);
+
+       return ResponseEntity.status(HttpStatus.OK).body(productList);
+    }
+
+    // 查詢單一商品 找不到要NOT_FOUND 但只要找到要200 OK
     @GetMapping("/products/{productId}")
     public ResponseEntity<Product> getProduct(@PathVariable Integer productId) {
         Product product = productService.getProductById(productId);
@@ -81,5 +98,8 @@ public class ProductController {
         // 刪除要是  HttpStatus.NO_CONTENT
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
+
+
 
 }
