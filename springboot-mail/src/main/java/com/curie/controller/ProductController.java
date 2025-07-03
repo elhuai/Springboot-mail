@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.curie.constant.ProductCategory;
+import com.curie.dto.ProducrQueryParams;
 import com.curie.dto.ProductRequest;
 import com.curie.model.Product;
 import com.curie.service.ProductService;
@@ -36,9 +37,17 @@ public class ProductController {
     @GetMapping("/products")
     public ResponseEntity<List<Product>> getProducts(
         @RequestParam(required = false) ProductCategory category,
-        @RequestParam(required = false) String search ){
+        @RequestParam(required = false) String search 
+    ){
+        // 為何讓程式好維護，要把傳入的資料存進一個class中
+        ProducrQueryParams producrQueryParams = new ProducrQueryParams();
+        // producrQueryParams裡頭的Category存進前端送入的category
+        producrQueryParams.setCategory(category);
+        producrQueryParams.setSearch(search);
+
+
         // 查到的資料以串列形式返回
-       List<Product> productList =  productService.getProducts(category,search);
+       List<Product> productList =  productService.getProducts(producrQueryParams);
 
        return ResponseEntity.status(HttpStatus.OK).body(productList);
     }

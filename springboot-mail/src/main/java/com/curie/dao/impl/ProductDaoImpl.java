@@ -2,6 +2,7 @@ package com.curie.dao.impl;
 
 import com.curie.constant.ProductCategory;
 import com.curie.dao.ProductDao;
+import com.curie.dto.ProducrQueryParams;
 import com.curie.dto.ProductRequest;
 import com.curie.model.Product;
 import com.curie.rowMapper.ProductRowMapper;
@@ -28,19 +29,19 @@ public class ProductDaoImpl implements ProductDao  {
     
 
     @Override
-    public List<Product> getProducts(ProductCategory category, String search) {
+    public List<Product> getProducts(ProducrQueryParams producrQueryParams) {
         String sql ="SELECT product_id,product_name, category, image_url, price, stock, description, create_date, last_modified_date FROM product "+
         "WHERE 1=1"; //利用WHERE 1=1 讓整個sql判斷可以讓後面任意加上多組篩選
         
         // 就算沒有傳入值也要加這行 去將資料轉為想要的型態
         Map<String,Object> map = new HashMap<>();
-        if (category != null){
+        if (producrQueryParams.getCategory() != null){
             sql = sql + " AND category=:category"; // 記得要預留一個空白鍵 這樣接上sql語句才不會報錯
-            map.put("category", category.name());  //category是Enum方法，所以要用name()把它轉為字串
+            map.put("category", producrQueryParams.getCategory().name());  //category是Enum方法，所以要用name()把它轉為字串
         }
-        if (search != null){
+        if (producrQueryParams.getSearch() != null){
             sql = sql + " AND (product_name LIKE :search OR description LIKE :search)"; // 記得不可以寫成%:search% 只能寫在map.put()裡面
-            map.put("search", "%" + search + "%");  //因為只是需要模糊符合所以加上％：%XX%只要裡面有XX即可；XX% XX開頭；%XX XX結尾的資料
+            map.put("search", "%" +  producrQueryParams.getSearch() + "%");  //因為只是需要模糊符合所以加上％：%XX%只要裡面有XX即可；XX% XX開頭；%XX XX結尾的資料
         }
 
         // 利用ProductRowMapper整理每個查好的資料，然後存入
