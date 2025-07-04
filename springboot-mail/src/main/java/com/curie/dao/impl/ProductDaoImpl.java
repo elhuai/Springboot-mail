@@ -35,6 +35,8 @@ public class ProductDaoImpl implements ProductDao  {
         
         // 就算沒有傳入值也要加這行 去將資料轉為想要的型態
         Map<String,Object> map = new HashMap<>();
+
+        // ＝＝＝＝＝查詢條件 ＝＝＝＝＝
         if (producrQueryParams.getCategory() != null){
             sql = sql + " AND category=:category"; // 記得要預留一個空白鍵 這樣接上sql語句才不會報錯
             map.put("category", producrQueryParams.getCategory().name());  //category是Enum方法，所以要用name()把它轉為字串
@@ -44,9 +46,17 @@ public class ProductDaoImpl implements ProductDao  {
             map.put("search", "%" +  producrQueryParams.getSearch() + "%");  //因為只是需要模糊符合所以加上％：%XX%只要裡面有XX即可；XX% XX開頭；%XX XX結尾的資料
         }
 
+        // ＝＝＝＝＝ 排序 ＝＝＝＝＝
         // 有預設值所以不用if判斷式，記得前後都要加空白，以防字串連在一起就會報錯
         sql = sql + " ORDER BY " +  producrQueryParams.getOrderBy() + " " +  producrQueryParams.getSort();
         
+        // ＝＝＝＝＝ 分頁 ＝＝＝＝＝
+        sql = sql + " LIMIT :limit Offset :offset";
+        map.put("limit",producrQueryParams.getLimit());
+        map.put("offset",producrQueryParams.getOffset());
+        // 不寫成 " LIMIT " +  producrQueryParams.getLimit() + " Offset " +  producrQueryParams.getOffset(); 原因：
+        // 因為這樣寫會讓SQL語句更清晰，並且可以避免SQL注入攻擊。這樣的寫法也能讓我們在Map中傳入參數時更方便。
+
         // 利用ProductRowMapper整理每個查好的資料，然後存入
         List<Product> productList =namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
         

@@ -1,6 +1,7 @@
 package com.curie.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.curie.constant.ProductCategory;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
-
+@Validated // 有用到最大最小值判斷的時候要記得加@Validated
 @RestController
 public class ProductController {
 
@@ -41,7 +44,10 @@ public class ProductController {
         @RequestParam(required = false) String search,
         // 排序 sorting
         @RequestParam(defaultValue = "create_date") String orderBy, //根據何種參數來排列，預設為最新商品在前
-        @RequestParam(defaultValue = "desc") String sort   //決定降冪升冪，預設降冪（大到小）
+        @RequestParam(defaultValue = "desc") String sort,   //決定降冪升冪，預設降冪（大到小）
+        // 分頁pagination. (即使資料預設是數字型態，defaultValue值也是要給字串)
+        @RequestParam(defaultValue = "5") @Max(1000) @Min(0) Integer limit,  //限制讀取的筆數，避免前端傳很大數字進來導致取太大數字，所以要設定最大值最小值
+        @RequestParam(defaultValue = "0") @Min(0) Integer offset //指定略過幾筆資料，並且避免前端回傳負值
     ){
         // 為何讓程式好維護，要把傳入的資料存進一個class中，這樣傳入參數一堆不用數順序，新增參數時也不用每支都改
         ProducrQueryParams producrQueryParams = new ProducrQueryParams();
@@ -50,6 +56,8 @@ public class ProductController {
         producrQueryParams.setSearch(search);
         producrQueryParams.setOrderBy(orderBy);
         producrQueryParams.setSort(sort);
+        producrQueryParams.setLimit(limit);
+        producrQueryParams.setOffset(offset);
 
 
         // 查到的資料以串列形式返回
