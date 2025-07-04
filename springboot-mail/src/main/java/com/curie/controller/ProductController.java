@@ -36,14 +36,20 @@ public class ProductController {
     // 查詢非限定商品->不管有沒有查到都200 OK
     @GetMapping("/products")
     public ResponseEntity<List<Product>> getProducts(
+        // 查詢條件Filtering
         @RequestParam(required = false) ProductCategory category,
-        @RequestParam(required = false) String search 
+        @RequestParam(required = false) String search,
+        // 排序 sorting
+        @RequestParam(defaultValue = "create_date") String orderBy, //根據何種參數來排列，預設為最新商品在前
+        @RequestParam(defaultValue = "desc") String sort   //決定降冪升冪，預設降冪（大到小）
     ){
-        // 為何讓程式好維護，要把傳入的資料存進一個class中
+        // 為何讓程式好維護，要把傳入的資料存進一個class中，這樣傳入參數一堆不用數順序，新增參數時也不用每支都改
         ProducrQueryParams producrQueryParams = new ProducrQueryParams();
         // producrQueryParams裡頭的Category存進前端送入的category
         producrQueryParams.setCategory(category);
         producrQueryParams.setSearch(search);
+        producrQueryParams.setOrderBy(orderBy);
+        producrQueryParams.setSort(sort);
 
 
         // 查到的資料以串列形式返回

@@ -1,6 +1,7 @@
 package com.curie.service.impl;
 import com.curie.constant.ProductCategory;
 import com.curie.dao.ProductDao;
+import com.curie.dto.ProducrQueryParams;
 import com.curie.dto.ProductRequest;
 import com.curie.model.Product;
 import com.curie.service.ProductService;

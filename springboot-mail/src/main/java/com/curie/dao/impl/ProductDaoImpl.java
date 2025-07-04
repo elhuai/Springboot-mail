@@ -44,6 +44,9 @@ public class ProductDaoImpl implements ProductDao  {
             map.put("search", "%" +  producrQueryParams.getSearch() + "%");  //因為只是需要模糊符合所以加上％：%XX%只要裡面有XX即可；XX% XX開頭；%XX XX結尾的資料
         }
 
+        // 有預設值所以不用if判斷式，記得前後都要加空白，以防字串連在一起就會報錯
+        sql = sql + " ORDER BY " +  producrQueryParams.getOrderBy() + " " +  producrQueryParams.getSort();
+        
         // 利用ProductRowMapper整理每個查好的資料，然後存入
         List<Product> productList =namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
         
