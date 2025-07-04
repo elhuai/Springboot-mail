@@ -9,8 +9,8 @@ import com.curie.model.Product;
 
 public interface ProductService {
     // 返回值資料型態 Controller執行名稱 （）中放入有沒有前端資料要傳進後端的參數
-    
     List<Product> getProducts(ProducrQueryParams producrQueryParams);
+    Integer countProduct(ProducrQueryParams producrQueryParams);
 
     Product getProductById(Integer productId);
 

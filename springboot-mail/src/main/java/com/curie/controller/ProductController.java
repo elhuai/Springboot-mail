@@ -9,6 +9,7 @@ import com.curie.dto.ProducrQueryParams;
 import com.curie.dto.ProductRequest;
 import com.curie.model.Product;
 import com.curie.service.ProductService;
+import com.curie.util.Page;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,7 +39,7 @@ public class ProductController {
 
     // 查詢非限定商品->不管有沒有查到都200 OK
     @GetMapping("/products")
-    public ResponseEntity<List<Product>> getProducts(
+    public ResponseEntity<Page<Product>> getProducts(
         // 查詢條件Filtering
         @RequestParam(required = false) ProductCategory category,
         @RequestParam(required = false) String search,
@@ -59,11 +60,20 @@ public class ProductController {
         producrQueryParams.setLimit(limit);
         producrQueryParams.setOffset(offset);
 
+        // 查到的資料以串列形式返回 取得productList
+        List<Product> productList =  productService.getProducts(producrQueryParams);
 
-        // 查到的資料以串列形式返回
-       List<Product> productList =  productService.getProducts(producrQueryParams);
+        // 取得 product 總數
+        Integer total = productService.countProduct(producrQueryParams);
+        
+        // 分頁
+        Page<Product> page = new Page<>();
+        page.setLimit(limit);
+        page.setOffset(offset);
+        page.setTotal(total);
+        page.setResult(productList);
 
-       return ResponseEntity.status(HttpStatus.OK).body(productList);
+       return ResponseEntity.status(HttpStatus.OK).body(page);
     }
 
     // 查詢單一商品 找不到要NOT_FOUND 但只要找到要200 OK

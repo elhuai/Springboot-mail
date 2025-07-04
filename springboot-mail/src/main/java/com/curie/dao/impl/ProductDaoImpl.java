@@ -40,11 +40,11 @@ public class ProductDaoImpl implements ProductDao  {
         if (producrQueryParams.getCategory() != null){
             sql = sql + " AND category=:category"; // 記得要預留一個空白鍵 這樣接上sql語句才不會報錯
             map.put("category", producrQueryParams.getCategory().name());  //category是Enum方法，所以要用name()把它轉為字串
-        }
+        };
         if (producrQueryParams.getSearch() != null){
             sql = sql + " AND (product_name LIKE :search OR description LIKE :search)"; // 記得不可以寫成%:search% 只能寫在map.put()裡面
             map.put("search", "%" +  producrQueryParams.getSearch() + "%");  //因為只是需要模糊符合所以加上％：%XX%只要裡面有XX即可；XX% XX開頭；%XX XX結尾的資料
-        }
+        };
 
         // ＝＝＝＝＝ 排序 ＝＝＝＝＝
         // 有預設值所以不用if判斷式，記得前後都要加空白，以防字串連在一起就會報錯
@@ -62,6 +62,32 @@ public class ProductDaoImpl implements ProductDao  {
         
         return productList;
     }
+
+    
+
+    @Override
+    public Integer countProduct(ProducrQueryParams producrQueryParams) {
+        String sql = "SELECT count(*) FROM product WHERE 1=1";
+
+        Map<String,Object> map = new HashMap<>();
+
+        // ＝＝＝＝＝查詢條件 ＝＝＝＝＝
+        if (producrQueryParams.getCategory() != null){
+            sql = sql + " AND category=:category"; // 記得要預留一個空白鍵 這樣接上sql語句才不會報錯
+            map.put("category", producrQueryParams.getCategory().name());  //category是Enum方法，所以要用name()把它轉為字串
+        };
+        if (producrQueryParams.getSearch() != null){
+            sql = sql + " AND (product_name LIKE :search OR description LIKE :search)"; // 記得不可以寫成%:search% 只能寫在map.put()裡面
+            map.put("search", "%" +  producrQueryParams.getSearch() + "%");  //因為只是需要模糊符合所以加上％：%XX%只要裡面有XX即可；XX% XX開頭；%XX XX結尾的資料
+        };
+
+        // 使用sql的count(*)方法時可以用上 queryForObject 方法將 count 值轉成 integer 類型
+        Integer total =namedParameterJdbcTemplate.queryForObject(sql, map, Integer.class);
+
+        return total;
+    }
+
+
 
     @Override
     public Product getProductById(Integer productId) {

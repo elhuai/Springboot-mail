@@ -9,6 +9,8 @@ import com.curie.model.Product;
 public interface ProductDao {
     
     List<Product> getProducts(ProducrQueryParams producrQueryParams);
+    Integer countProduct(ProducrQueryParams producrQueryParams);
+    
     Product getProductById(Integer productId);
     Integer createProduct(ProductRequest productRequest);
     
